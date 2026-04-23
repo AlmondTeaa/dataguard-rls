@@ -65,6 +65,7 @@ name = "bin"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "routes",
  "tokio",
 ]
 
@@ -340,6 +341,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ed2bf2547551a7053d6fdfafda3f938979645c44812fbfcda098faae3f1a362d"
 dependencies = [
  "bitflags",
+]
+
+[[package]]
+name = "routes"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "serde_json",
 ]
 
 [[package]]

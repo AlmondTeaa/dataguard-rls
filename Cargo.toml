@@ -2,10 +2,14 @@
 resolver = "3"
 
 members = [
-    "bin"
-]
+    "bin",
+    "crates/routes"]
 
 
 [workspace.dependencies]
 axum = "0.8.9"
 tokio = { version = "1", features = ["full"] }
+serde_json = "1.0.149"
+
+
+routes = {path = "./crates/routes"}
