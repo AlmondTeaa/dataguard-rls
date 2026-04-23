@@ -1,4 +1,2 @@
-pub async fn health() -> &'static str{
-    "OK"
-}
-
+pub mod health;
+pub mod google_login;
