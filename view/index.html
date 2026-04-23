@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            background: #1e293b;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Login Page</h2>
+        <button onclick="loginPopup()">Login with Google</button>
+    </div>
+
+    <script>
+    function loginPopup() {
+        const popup = window.open(
+            "http://localhost:8080/google/auth/login",
+            "loginPopup",
+            "width=500,height=600"
+        );
+
+        // Listen for message from popup
+        window.addEventListener("message", (event) => {
+            if (event.data.token) {
+                localStorage.setItem("token", event.data.token);
+                console.log("Logged in!", event.data.token);
+
+                setTimeout(() => {
+                    window.location.href = "/dashboard";
+                    }, 5000);
+                }
+        });
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>RLS Dashboard</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: #1e293b;
+        }
+
+        .logout {
+            background: #ef4444;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .container {
+            padding: 24px;
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #334155;
+        }
+
+        th {
+            color: #94a3b8;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            background: #2563eb;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <h2>RLS Demo Dashboard</h2>
+    <button class="logout" onclick="logout()">Logout</button>
+</div>
+
+<div class="container">
+
+    <div class="card">
+        <h3>Current User</h3>
+        <p><strong>ID:</strong> <span id="user-id"></span></p>
+        <p><strong>Department:</strong> <span id="user-dept"></span></p>
+    </div>
+
+    <div class="card">
+        <h3>Employee Data (Simulated RLS)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Department</th>
+                </tr>
+            </thead>
+            <tbody id="employee-table"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+// 👇 FAKE USERS (simulate Google IDs or JWT)
+const users = {
+    "108022246894557453386": { id: "108022246894557453386", department: "IT" },
+    "107599949044387531471": { id: "acct-user", department: "Accounting" }
+};
+
+// 👇 FAKE EMPLOYEE DATA
+const employees = [
+    { name: "Alice", department: "IT" },
+    { name: "Bob", department: "IT" },
+    { name: "Charlie", department: "Accounting" },
+    { name: "Dave", department: "Accounting" }
+];
+
+// 👇 Get token (we treat it as user id)
+const token = localStorage.getItem("token");
+console.log("token :");
+console.log(token);
+console.log(users[token]);
+if (!token || !users[token]) {
+    alert("Invalid user. Use 'it-user' or 'acct-user'");
+}
+
+// 👇 Current user
+const currentUser = users[token];
+
+// Display user info
+document.getElementById("user-id").innerText = currentUser.id;
+document.getElementById("user-dept").innerText = currentUser.department;
+
+// 👇 Simulated RLS filter
+const filtered = employees.filter(emp => 
+    emp.department === currentUser.department
+);
+
+// Render table
+const table = document.getElementById("employee-table");
+
+filtered.forEach(emp => {
+    const row = `
+        <tr>
+            <td>${emp.name}</td>
+            <td><span class="badge">${emp.department}</span></td>
+        </tr>
+    `;
+    table.innerHTML += row;
+});
+
+function logout() {
+    localStorage.removeItem("token");
+    window.location.href = "/index";
+}
+</script>
+
+</body>
+</html>

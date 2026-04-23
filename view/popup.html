@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <script>
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+
+    // Send token to parent window
+    window.opener.postMessage({ token }, "*");
+
+    // Close popup
+    window.close();
+    </script>
+</body>
+</html>
