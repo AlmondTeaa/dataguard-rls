@@ -74,12 +74,13 @@
 
     <div class="card">
         <h3>Current User</h3>
-        <p><strong>ID:</strong> <span id="user-id"></span></p>
+        <p><strong>Token:</strong> <span id="user-id"></span></p>
         <p><strong>Department:</strong> <span id="user-dept"></span></p>
     </div>
 
     <div class="card">
         <h3>Employee Data (Simulated RLS)</h3>
+
         <table>
             <thead>
                 <tr>
@@ -87,6 +88,8 @@
                     <th>Department</th>
                 </tr>
             </thead>
+
+            <!-- 🔥 THIS IS WHAT YOU WERE MISSING -->
             <tbody id="employee-table"></tbody>
         </table>
     </div>
@@ -94,53 +97,52 @@
 </div>
 
 <script>
-// 👇 FAKE USERS (simulate Google IDs or JWT)
-const users = {
-    "108022246894557453386": { id: "it-user", department: "IT" },
-    "107599949044387531471": { id: "acct-user", department: "Accounting" }
-};
+document.addEventListener("DOMContentLoaded", () => {
 
-// 👇 FAKE EMPLOYEE DATA
-const employees = [
-    { name: "Alice", department: "IT" },
-    { name: "Bob", department: "IT" },
-    { name: "Charlie", department: "Accounting" },
-    { name: "Dave", department: "Accounting" }
-];
+    const token = localStorage.getItem("token");
 
-// 👇 Get token (we treat it as user id)
-const token = localStorage.getItem("token");
-console.log("token :");
-console.log(token);
-console.log(users[token]);
-if (!token || !users[token]) {
-    alert("Invalid user. Use 'it-user' or 'acct-user'");
-}
+    if (!token) {
+        window.location.href = "/index";
+        return;
+    }
 
-// 👇 Current user
-const currentUser = users[token];
-
-// Display user info
-document.getElementById("user-id").innerText = currentUser.id;
-document.getElementById("user-dept").innerText = currentUser.department;
-
-// 👇 Simulated RLS filter
-const filtered = employees.filter(emp => 
-    emp.department === currentUser.department
-);
-
-// Render table
-const table = document.getElementById("employee-table");
-
-filtered.forEach(emp => {
-    const row = `
-        <tr>
-            <td>${emp.name}</td>
-            <td><span class="badge">${emp.department}</span></td>
-        </tr>
-    `;
-    table.innerHTML += row;
+    document.getElementById("user-id").innerText = token;
+    
+    loadEmployees(token);
 });
+
+async function loadEmployees(token) {
+    const res = await fetch("/api/employees", {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    const data = await res.json();
+
+    const table = document.getElementById("employee-table");
+
+    if (!table) {
+        console.error("employee-table not found!");
+        return;
+    }
+
+    table.innerHTML = "";
+
+    // 👇 SET CURRENT USER DEPARTMENT
+    if (data.length > 0) {
+        document.getElementById("user-dept").innerText = data[0].department;
+    }
+
+    data.forEach(emp => {
+        table.innerHTML += `
+            <tr>
+                <td>${emp.name}</td>
+                <td><span class="badge">${emp.department}</span></td>
+            </tr>
+        `;
+    });
+}
 
 function logout() {
     localStorage.removeItem("token");

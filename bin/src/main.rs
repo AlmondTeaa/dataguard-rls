@@ -23,7 +23,7 @@ async fn main() {
     dotenvy::dotenv().ok();
     let pool = PgPoolOptions::new()
         .max_connections(5)
-        .connect("postgres://postgres:P3ru@0723@localhost:5432/rlsdemo")
+        .connect("postgres://app_user:123@localhost:5432/rlsdemo")
         .await
         .unwrap();
 
@@ -50,16 +50,21 @@ async fn get_employees(
     let token = headers
         .get("authorization")
         .and_then(|v| v.to_str().ok())
+        .and_then(|v| v.strip_prefix("Bearer "))
         .unwrap_or("");
+
+    println!("Token: {}", token);
 
     let mut tx = pool.begin().await.unwrap();
 
-    // ✅ safe for pooled connections
-    sqlx::query("SET LOCAL app.user_id = $1")
-        .bind(token)
-        .execute(&mut *tx)
-        .await
-        .unwrap();
+    // 🔥 FIXED LINE HERE
+    sqlx::query(&format!(
+        "SET LOCAL app.user_id = '{}'",
+        token
+    ))
+    .execute(&mut *tx)
+    .await
+    .unwrap();
 
     let rows = sqlx::query_as::<_, Employee>(
         r#"
